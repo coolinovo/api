@@ -1,22 +1,23 @@
 const Koa = require('koa')
 const router = require('koa-router')()
-const bdparser = require('koa-body-parser')
+const bdparser = require('koa-bodyparser')
 const render = require('koa-art-template')
 const path = require('path')
 const app = new Koa()
 
+const index = require('./routes/index')
+const users = require('./routes/users')
+
 app.use(bdparser())
-// app.use(views('views', {}))
+
 render(app, {
   root: path.join(__dirname, 'views'),
   extname: '.html',
   debug: process.env.NODE_ENV !== 'production'
 })
 
-router.get('/', async ctx => {
-  // ctx.body = 'hello'
-  await ctx.render('index')
-})
+router.use('/', index)
+router.use('/users', users)
 
 app.use(router.routes())
 app.use(router.allowedMethods())
