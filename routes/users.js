@@ -25,7 +25,6 @@ router.post('/login', async ctx => {
 router.post('/register', async ctx => {
   let user = ctx.request.body
   let md5_user = {...user, password: md5(user.password)}
-  console.log(md5_user)
   const res = await DB.create('users', md5_user)
   console.log(res)
   if (res.status === 1) {
