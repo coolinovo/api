@@ -34,24 +34,32 @@ class Db {
       }
     })
   }
-  create(collection, data, repeat=true) {
+  create(collection, data, repeat=false) {
     return new Promise((resolve, reject) => {
       try {
-        // 默认允许插入重复数据
+        // 默认不允许插入重复数据
         const flag = repeat
         this.connect().then(() => {
           if (flag) {
             new models[collection](data).save(err => {
-              err ? reject(err) : resolve({status: 1, msg: '插入数据成功'})
+              // err ? reject(err) : resolve({status: 1, msg: '插入数据成功'})
+              if (err) return reject(err)
+              this.retrieve(collection, data).then(res => {
+                resolve(res.data)
+              })
             })
           } else {
             this.retrieve(collection, data).then(res => {
               if (res.length > 0) {
-                resolve({status: 0, msg: '已存在'})
+                resolve({status: 0, msg: '用户已存在'})
+              } else {
+                new models[collection](data).save(err => {
+                  if (err) return reject(err)
+                  this.retrieve(collection, data).then(res => {
+                    resolve(res)
+                  })
+                })
               }
-              new models[collection](data).save(err => {
-                err ? reject(err) : resolve({status: 1, msg: '插入数据成功'})
-              })
             })
           }
         })
@@ -66,6 +74,7 @@ class Db {
         this.connect().then(() => {
           models[collection].find(data, (err, doc) => {
             err ? reject(err) : resolve({
+              status: 1,
               length: doc.length,
               data: doc
             })
@@ -81,7 +90,11 @@ class Db {
       try {
         this.connect().then(() => {
           models[collection].updateMany(old, {$set: now}, err => {
-            err ? reject(err) : resolve({status:1, msg: '更新成功'})
+            // err ? reject(err) : resolve({status:1, msg: '更新成功'})
+            if (err) return resolve({status: 0, msg: '修改信息失败!'})
+            this.retrieve(collection, now).then(res => {
+              resolve(res)
+            })
           })
         })
       } catch (e) {
@@ -94,7 +107,9 @@ class Db {
       try {
         this.connect().then(() => {
           models[collection].deleteMany(data, err => {
-            err ? reject(err) : resolve({status:1, msg: '删除成功'})
+            // err ? reject(err) : resolve({status:1, msg: '删除成功'})
+            if (err) return resolve({status: 0, msg: '删除用户失败!'})
+            resolve({status: 1, msg: '删除用户成功!'})
           })
         })
       } catch (e) {
@@ -104,11 +119,4 @@ class Db {
   }
 }
 
-const DB = Db.getInstance()
-
-DB.create('roles', {
-  name: '小弟',
-  auth_name: 'yeh'
-}).then(res => console.log(res))
-
-module.exports = Db
+module.exports = Db.getInstance()
