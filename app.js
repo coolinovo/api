@@ -7,6 +7,7 @@ const app = new Koa()
 
 const index = require('./routes/index')
 const users = require('./routes/users')
+const roles = require('./routes/roles')
 
 app.use(bdparser())
 
@@ -18,6 +19,7 @@ render(app, {
 
 router.use('/', index)
 router.use('/users', users)
+router.use('/roles', roles)
 
 app.use(router.routes())
 app.use(router.allowedMethods())
