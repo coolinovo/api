@@ -24,7 +24,7 @@ module.exports = {
     imgs: { type: Array, default: [] }, // n个图片文件名的json字符串
     detail: { type: String }
   },
-  category: {
+  categories: {
     name: {type: String, required: true},
     parentId: {type: String, required: true, default: '0'}
   }

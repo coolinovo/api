@@ -30,12 +30,12 @@ const productSchema = new Schema(collection.products)
 const ProductModel = model('product', productSchema)
 
 // category
-const categorySchema = new Schema(collection.category)
+const categorySchema = new Schema(collection.categories)
 const CategoryModel = model('category', categorySchema)
 
 module.exports = {
   users: UserModel,
   roles: RoleModel,
   products: ProductModel,
-  category: CategoryModel
+  categories: CategoryModel
 }
